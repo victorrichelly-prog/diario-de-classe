@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diário de vistos e notas</title>
+<style>
+:root {
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #cbd5e1;
+  --primary: #1d4ed8;
+  --primary-dark: #1e40af;
+  --green-bg: #dcfce7;
+  --green-tx: #166534;
+  --yellow-bg: #fef9c3;
+  --yellow-tx: #854d0e;
+  --red-bg: #fee2e2;
+  --red-tx: #991b1b;
+  --row-alt: #f8fafc;
+}
+body.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #334155;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --green-bg: #14532d;
+  --green-tx: #bbf7d0;
+  --yellow-bg: #713f12;
+  --yellow-tx: #fef08a;
+  --red-bg: #7f1d1d;
+  --red-tx: #fecaca;
+  --row-alt: #0f172a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+.topbar {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #fff;
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.top-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.top-field {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  padding: 4px 8px;
+  gap: 6px;
+}
+.top-field input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  outline: none;
+  min-width: 140px;
+}
+.top-field input::placeholder { color: rgba(255,255,255,0.75); }
+.top-actions { display: flex; gap: 6px; align-items: center; }
+.btn {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn:hover { opacity: 0.9; }
+.btn-top {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border-color: rgba(255,255,255,0.35);
+}
+.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-success { background: #16a34a; color: #fff; border-color: #16a34a; }
+.btn-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
+.btn-sm { padding: 4px 8px; font-size: 12px; }
+.container { max-width: 1280px; margin: 0 auto; padding: 12px; }
+.turmas-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.turma-tab {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.turma-tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-group label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+.field-group input, .field-group select {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+.tools-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.search-input {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  min-width: 190px;
+  font-size: 13px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.stat-card .stat-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+.stat-card .stat-val { font-size: 20px; font-weight: 800; margin-top: 2px; }
+.stat-card.green { background: var(--green-bg); border-color: #86efac; }
+.stat-card.green .stat-title, .stat-card.green .stat-val { color: var(--green-tx); }
+.stat-card.red { background: var(--red-bg); border-color: #fca5a5; }
+.stat-card.red .stat-title, .stat-card.red .stat-val { color: var(--red-tx); }
+.legend {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 720px; }
+th, td {
+  border: 1px solid var(--border);
+  padding: 6px;
+  text-align: center;
+  font-size: 13px;
+}
+th { background: var(--row-alt); font-weight: 700; position: sticky; top: 0; z-index: 2; }
+td.name-col, th.name-col { text-align: left; min-width: 170px; position: sticky; left: 0; background: var(--card); z-index: 1; }
+th.name-col { background: var(--row-alt); z-index: 3; }
+tr:nth-child(even) td { background: var(--row-alt); }
+tr:nth-child(even) td.name-col { background: var(--row-alt); }
+.date-in {
+  width: 58px;
+  font-size: 11px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px;
+  background: var(--card);
+  color: var(--text);
+  display: block;
+  margin: 0 auto 3px auto;
+}
+.btn-all-v {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 5px;
+  cursor: pointer;
+}
+.visto-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.nota-in {
+  width: 56px;
+  padding: 4px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--card);
+  color: var(--text);
+  font-weight: 600;
+}
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 800;
+  min-width: 46px;
+}
+.bg-green { background: var(--green-bg); color: var(--green-tx); }
+.bg-yellow { background: var(--yellow-bg); color: var(--yellow-tx); }
+.bg-red { background: var(--red-bg); color: var(--red-tx); }
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--card);
+  color: var(--text);
+  border-radius: 12px;
+  max-width: 780px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+.modal-head h3 { margin: 0; font-size: 16px; }
+.rep-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--bg);
+  margin-top: 10px;
+}
+.rep-header-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 6px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+.rep-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.rep-stat-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+.rep-stat-item b { display: block; font-size: 16px; margin-top: 2px; }
+.rep-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 0; background: var(--card); }
+.rep-table th, .rep-table td { border: 1px solid var(--border); padding: 5px; }
+.signatures {
+  display: none;
+  margin-top: 36px;
+  justify-content: space-around;
+  gap: 24px;
+}
+.sig-line {
+  border-top: 1px solid #000;
+  width: 220px;
+  text-align: center;
+  padding-top: 4px;
+  font-size: 12px;
+}
+@media print {
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff !important;
+    color: #000 !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .signatures { display: flex !important; }
+  .no-print { display: none !important; }
+}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Diário de Classe">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="top-inputs">
+    <strong>Diário de vistos e notas</strong>
+    <div class="top-field">
+      <span>🏫</span>
+      <input type="text" id="escolaInput" placeholder="Nome da Escola" oninput="saveMeta()">
+    </div>
+    <div class="top-field">
+      <span>📘</span>
+      <input type="text" id="disciplinaInput" placeholder="Disciplina" oninput="saveMeta()">
+    </div>
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-top" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn btn-top" onclick="openRelatorio()">📊 Relatório</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="turmas-bar" id="turmasBar"></div>
+
+  <div class="panel">
+    <div class="filters-row">
+      <div class="field-group">
+        <label>Professor(a)</label>
+        <input type="text" id="profInput" placeholder="Nome do professor" oninput="saveMeta()">
+      </div>
+      <div class="field-group">
+        <label>Bimestre / Visão</label>
+        <select id="bimSelect" onchange="setBim(parseInt(this.value, 10))">
+          <option value="0">1° Bimestre</option>
+          <option value="1">2° Bimestre</option>
+          <option value="2">3° Bimestre</option>
+          <option value="3">4° Bimestre</option>
+          <option value="4">📈 Média Anual (Meta 24,0)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tools-row">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Buscar aluno..." oninput="renderTable()">
+      <button class="btn btn-sm" onclick="openModal('modalColar')">📋 Colar Lista</button>
+      <button class="btn btn-sm" onclick="sortAlunos()">🔤 Ordenar A-Z</button>
+      <button class="btn btn-sm" id="filterLowBtn" onclick="toggleLowFilter()">⚠ Nota &lt; 6,0</button>
+      <button class="btn btn-sm" onclick="openModal('modalConfig')">⚙ Regras &amp; Backup</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">Total de Alunos</div>
+      <div class="stat-val" id="statTotal">0</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-title">Aprovados (≥ 6,0)</div>
+      <div class="stat-val" id="statAprov">0 (0%)</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-title">Reprovados (&lt; 6,0)</div>
+      <div class="stat-val" id="statReprov">0 (0%)</div>
+    </div>
+  </div>
+
+  <div class="legend" id="legendBox">
+    <span>Toque no quadrado: ❌ (0) → ✅ (100%) → ⚠ (50%)</span>
+    <span>| Cores Nota do Bimestre: <b>Verde</b> (6,1 a 10) | <b>Amarelo</b> (6,0) | <b>Vermelho</b> (≤ 5,9)</span>
+  </div>
+
+  <div class="table-wrap">
+    <table id="mainTable"></table>
+  </div>
+
+  <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="addAluno()">➕ Adicionar Aluno</button>
+  </div>
+</div>
+
+<!-- Modal Regras & Backup -->
+<div class="modal-backdrop" id="modalConfig">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalConfigTitle">⚙ Regras &amp; Backup</h3>
+      <button class="btn btn-sm" onclick="closeModal('modalConfig')">✖</button>
+    </div>
+    <p id="cfgAnualAviso" style="display:none; color:var(--muted); font-size:13px; margin-top:0;">
+      Selecione um bimestre específico (1° ao 4°) para configurar os vistos individuais daquele período.
+    </p>
+    <div id="cfgVistosRow" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+      <div class="field-group">
+        <label>Nº de Vistos (Bimestre Atual)</label>
+        <input type="number" id="cfgNumVistos" min="1" max="30" onchange="updateRules()">
+      </div>
+      <div class="field-group">
+        <label>Valor por Visto (Bimestre Atual)</label>
+        <input type="number" id="cfgValVisto" step="0.1" min="0" max="10" onchange="updateRules()">
+      </div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+      <button class="btn btn-sm btn-primary" onclick="changeCols('trabs', 1)">➕ Adicionar Trab</button>
+      <button class="btn btn-sm" onclick="changeCols('trabs', -1)">➖ Remover Trab</button>
+    </div>
+    <hr style="border:none; border-top:1px solid var(--border); margin:12px 0;">
+    <p style="font-size:12px; color:var(--muted); margin:0 0 10px;">Este arquivo mantém seus próprios dados neste aparelho. Para usar no tablet ou transferir os registros, baixe o backup aqui e restaure o arquivo .json no outro aparelho.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <button class="btn btn-success" onclick="downloadBackup()">💾 Baixar Backup (.json)</button>
+      <label class="btn" style="cursor:pointer;">
+        📂 Restaurar Backup
+        <input type="file" accept=".json" style="display:none" onchange="restoreBackup(event)">
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Colar Lista -->
+<div class="modal-backdrop" id="modalColar">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📋 Colar Lista de Alunos (um por linha)</h3>
+      <button class="btn btn-sm" onclick="closeModal('modalColar')">✖</button>
+    </div>
+    <textarea id="pasteArea" rows="8" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);" placeholder="Cole os nomes aqui, um por linha..."></textarea>
+    <div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">
+      <button class="btn btn-primary" onclick="importAlunos(false)">Adicionar aos Atuais</button>
+      <button class="btn btn-danger" onclick="importAlunos(true)">Substituir Lista</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Relatório -->
+<div class="modal-backdrop" id="modalRelatorio">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📊 Relatório da Turma</h3>
+      <button class="btn btn-sm" onclick="closeModal('modalRelatorio')">✖</button>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;" class="no-print">
+      <button class="btn btn-sm btn-primary" id="btnRepTurma" onclick="setRepMode('turma')">📋 Relatório da Turma</button>
+      <button class="btn btn-sm" id="btnRepIndiv" onclick="setRepMode('indiv')">👤 Boletim Individual</button>
+      <select id="repAlunoSelect" style="display:none; padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);" onchange="renderRelatorio()"></select>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;" class="no-print">
+      <button class="btn btn-sm btn-success" onclick="copyWhatsApp()">📱 Copiar p/ WhatsApp</button>
+      <button class="btn btn-sm" onclick="exportCSV()">📑 Baixar Excel (CSV)</button>
+      <button class="btn btn-sm btn-primary" onclick="window.print()">🖨 Imprimir / PDF</button>
+    </div>
+    <div class="rep-box" id="printArea"></div>
+  </div>
+</div>
+
+<script>
+// Cada cópia do arquivo usa uma chave própria, derivada do nome do arquivo.
+// Assim, arquivos com nomes diferentes mantêm dados separados no mesmo navegador.
+function getArquivoId() {
+  var nome = 'diario';
+  try {
+    nome = decodeURIComponent((location.pathname || '').split('/').pop() || 'diario');
+  } catch (e) {}
+  nome = nome.replace(/\.[^.]+$/, '').toLowerCase();
+  nome = nome.normalize ? nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : nome;
+  nome = nome.replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
+  return nome || 'diario';
+}
+var ARQUIVO_ID = 'diario-geral';
+var STORAGE_KEY = 'diario_vistos_notas_' + ARQUIVO_ID;
+var LEGACY_STORAGE_KEY = 'diario_vistos_notas_vfinal';
+var ESCOLA_PADRAO = '';
+var state = {
+  escola: ESCOLA_PADRAO,
+  disciplina: '',
+  dark: false,
+  currentTurma: 0,
+  currentBim: 0,
+  filterLow: false,
+  turmas: []
+};
+var repMode = 'turma';
+
+function createBim(numVistos, valVisto) {
+  var nv = (typeof numVistos === 'number' && !isNaN(numVistos)) ? numVistos : 5;
+  var vv = (typeof valVisto === 'number' && !isNaN(valVisto)) ? valVisto : 0.4;
+  var datas = [];
+  for (var i = 0; i < nv; i++) datas.push('D' + (i + 1));
+  return { datas: datas, datasTrabs: [], dataAval: '', numVistos: nv, valVisto: vv };
+}
+
+function getBimCfg(t, b) {
+  if (!t.bims) t.bims = [];
+  if (!t.bims[b]) {
+    t.bims[b] = createBim(t.numVistos || 5, (typeof t.valVisto === 'number') ? t.valVisto : 0.4);
+  }
+  var bm = t.bims[b];
+  if (typeof bm.numVistos !== 'number' || isNaN(bm.numVistos)) {
+    bm.numVistos = (typeof t.numVistos === 'number' && !isNaN(t.numVistos)) ? t.numVistos : 5;
+  }
+  if (typeof bm.valVisto !== 'number' || isNaN(bm.valVisto)) {
+    bm.valVisto = (typeof t.valVisto === 'number' && !isNaN(t.valVisto)) ? t.valVisto : 0.4;
+  }
+  if (!bm.datas) bm.datas = [];
+  if (!bm.datasTrabs) bm.datasTrabs = [];
+  if (typeof bm.dataAval !== 'string') bm.dataAval = '';
+  while (bm.datas.length < bm.numVistos) bm.datas.push('D' + (bm.datas.length + 1));
+  return bm;
+}
+
+function createAluno(nome, numVistos, numTrabs) {
+  var bims = [];
+  for (var b = 0; b < 4; b++) {
+    var v = [];
+    for (var i = 0; i < numVistos; i++) v.push(0);
+    var t = [];
+    for (var j = 0; j < numTrabs; j++) t.push('');
+    bims.push({ vistos: v, trabs: t, aval: '', recs: [], obs: '' });
+  }
+  return { nome: nome, bims: bims };
+}
+
+function createTurma(nome) {
+  var t = {
+    nome: nome,
+    prof: '',
+    numVistos: 5,
+    valVisto: 0.4,
+    numTrabs: 1,
+    bims: [createBim(5, 0.4), createBim(5, 0.4), createBim(5, 0.4), createBim(5, 0.4)],
+    alunos: []
+  };
+  t.alunos.push(createAluno('Aluno Exemplo 1', 5, 1));
+  return t;
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    // A primeira cópia (Jucurutu) pode aproveitar os dados já existentes na versão 7.
+    if (!raw && ARQUIVO_ID.indexOf('jucurutu') >= 0) {
+      raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    }
+    if (raw) {
+      var parsed = JSON.parse(raw);
+      if (parsed && parsed.turmas && parsed.turmas.length) {
+        state = parsed;
+        if (!state.escola && ESCOLA_PADRAO) state.escola = ESCOLA_PADRAO;
+        saveState();
+        return;
+      }
+    }
+  } catch (e) {}
+  state.turmas = [createTurma('Turma A')];
+  saveState();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+
+function getTurma() {
+  if (!state.turmas[state.currentTurma]) state.currentTurma = 0;
+  return state.turmas[state.currentTurma];
+}
+
+function saveMeta() {
+  state.escola = document.getElementById('escolaInput').value;
+  state.disciplina = document.getElementById('disciplinaInput').value;
+  var t = getTurma();
+  t.prof = document.getElementById('profInput').value;
+  saveState();
+}
+
+function toggleTheme() {
+  state.dark = !state.dark;
+  document.body.classList.toggle('dark', state.dark);
+  document.getElementById('themeBtn').textContent = state.dark ? '☀️' : '🌙';
+  saveState();
+}
+
+function renderTurmasBar() {
+  var bar = document.getElementById('turmasBar');
+  var html = '';
+  for (var i = 0; i < state.turmas.length; i++) {
+    var active = i === state.currentTurma ? ' active' : '';
+    html += '<div class="turma-tab' + active + '" onclick="selectTurma(' + i + ')">' +
+      '<span>' + esc(state.turmas[i].nome) + '</span>' +
+      '<span onclick="event.stopPropagation(); renameTurma(' + i + ')" title="Renomear">✏️</span>' +
+      (state.turmas.length > 1 ? '<span onclick="event.stopPropagation(); deleteTurma(' + i + ')" title="Excluir">🗑️</span>' : '') +
+      '</div>';
+  }
+  html += '<button class="btn btn-sm btn-primary" onclick="addTurma()">➕ Nova Turma</button>';
+  bar.innerHTML = html;
+}
+
+function selectTurma(idx) {
+  state.currentTurma = idx;
+  syncInputs();
+  renderTurmasBar();
+  renderTable();
+  saveState();
+}
+
+function addTurma() {
+  var nome = prompt('Nome da nova turma:', 'Turma ' + (state.turmas.length + 1));
+  if (!nome) return;
+  state.turmas.push(createTurma(nome.trim()));
+  state.currentTurma = state.turmas.length - 1;
+  syncInputs();
+  renderTurmasBar();
+  renderTable();
+  saveState();
+}
+
+function renameTurma(idx) {
+  var novo = prompt('Novo nome da turma:', state.turmas[idx].nome);
+  if (!novo) return;
+  state.turmas[idx].nome = novo.trim();
+  renderTurmasBar();
+  saveState();
+}
+
+function deleteTurma(idx) {
+  if (!confirm('Excluir a turma "' + state.turmas[idx].nome + '"?')) return;
+  state.turmas.splice(idx, 1);
+  if (state.currentTurma >= state.turmas.length) state.currentTurma = 0;
+  syncInputs();
+  renderTurmasBar();
+  renderTable();
+  saveState();
+}
+
+function setBim(b) {
+  state.currentBim = b;
+  var sel = document.getElementById('bimSelect');
+  if (sel) sel.value = String(b);
+  document.getElementById('legendBox').style.display = b === 4 ? 'none' : 'flex';
+  renderTable();
+  saveState();
+}
+
+function toggleLowFilter() {
+  state.filterLow = !state.filterLow;
+  document.getElementById('filterLowBtn').classList.toggle('btn-danger', state.filterLow);
+  renderTable();
+}
+
+function calcBim(t, aluno, b) {
+  var cfg = getBimCfg(t, b);
+  var ab = aluno.bims[b];
+  var countV = 0;
+  for (var i = 0; i < cfg.numVistos; i++) {
+    var st = ab.vistos[i] || 0;
+    if (st === 1) countV += 1;
+    else if (st === 2) countV += 0.5;
+  }
+  var notaV = countV * (parseFloat(cfg.valVisto) || 0);
+  var somaT = 0;
+  for (var j = 0; j < t.numTrabs; j++) {
+    var vt = parseFloat(ab.trabs[j]);
+    if (!isNaN(vt)) somaT += vt;
+  }
+  var aval = parseFloat(ab.aval);
+  if (isNaN(aval)) aval = 0;
+  var nf = notaV + somaT + aval;
+  if (nf > 10) nf = 10;
+  if (nf < 0) nf = 0;
+  return {
+    vistosCount: countV,
+    notaVistos: notaV,
+    notaFinal: nf
+  };
+}
+
+function getBadgeClass(nota) {
+  var n = Math.round(nota * 10) / 10;
+  if (n > 6.0) return 'bg-green';
+  if (n === 6.0) return 'bg-yellow';
+  return 'bg-red';
+}
+
+function fmt(n) {
+  return n.toFixed(1).replace('.', ',');
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderTable() {
+  var t = getTurma();
+  var b = state.currentBim;
+  var q = document.getElementById('searchInput').value.toLowerCase().trim();
+  var table = document.getElementById('mainTable');
+
+  var total = t.alunos.length;
+  var aprov = 0;
+  var reprov = 0;
+
+  for (var i = 0; i < t.alunos.length; i++) {
+    var medCheck = 0;
+    if (b < 4) {
+      medCheck = calcBim(t, t.alunos[i], b).notaFinal;
+    } else {
+      var s = 0;
+      for (var xb = 0; xb < 4; xb++) s += calcBim(t, t.alunos[i], xb).notaFinal;
+      medCheck = s / 4;
+    }
+    if (Math.round(medCheck * 10) / 10 >= 6.0) aprov++;
+    else reprov++;
+  }
+
+  document.getElementById('statTotal').textContent = total;
+  var pAp = total ? Math.round((aprov / total) * 100) : 0;
+  var pRep = total ? Math.round((reprov / total) * 100) : 0;
+  document.getElementById('statAprov').textContent = aprov + ' (' + pAp + '%)';
+  document.getElementById('statReprov').textContent = reprov + ' (' + pRep + '%)';
+
+  if (b === 4) {
+    var htmlA = '<thead><tr><th>Nº</th><th class="name-col">Aluno</th><th>1º Bim</th><th>2º Bim</th><th>3º Bim</th><th>4º Bim</th><th>Soma</th><th>Média Anual</th><th>Situação</th></tr></thead><tbody>';
+    for (var i = 0; i < t.alunos.length; i++) {
+      var al = t.alunos[i];
+      if (q && al.nome.toLowerCase().indexOf(q) === -1) continue;
+      var n0 = calcBim(t, al, 0).notaFinal;
+      var n1 = calcBim(t, al, 1).notaFinal;
+      var n2 = calcBim(t, al, 2).notaFinal;
+      var n3 = calcBim(t, al, 3).notaFinal;
+      var soma = n0 + n1 + n2 + n3;
+      var media = soma / 4;
+      if (state.filterLow && Math.round(media * 10) / 10 >= 6.0) continue;
+      var isAp = Math.round(media * 10) / 10 >= 6.0;
+      htmlA += '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td class="name-col"><b>' + esc(al.nome) + '</b></td>' +
+        '<td>' + fmt(n0) + '</td>' +
+        '<td>' + fmt(n1) + '</td>' +
+        '<td>' + fmt(n2) + '</td>' +
+        '<td>' + fmt(n3) + '</td>' +
+        '<td><b>' + fmt(soma) + '</b></td>' +
+        '<td><span class="badge ' + getBadgeClass(media) + '">' + fmt(media) + '</span></td>' +
+        '<td><span class="badge ' + (isAp ? 'bg-green' : 'bg-red') + '">' + (isAp ? 'Aprovado' : 'Reprovado') + '</span></td>' +
+        '</tr>';
+    }
+    htmlA += '</tbody>';
+    table.innerHTML = htmlA;
+    return;
+  }
+
+  var bimMeta = getBimCfg(t, b);
+  var html = '<thead><tr><th>Nº</th><th class="name-col">Aluno</th>';
+  for (var v = 0; v < bimMeta.numVistos; v++) {
+    var dt = bimMeta.datas[v] || ('D' + (v + 1));
+    html += '<th><input class="date-in" maxlength="5" value="' + esc(dt) + '" oninput="setDataVisto(' + v + ', this)">' +
+      '<button class="btn-all-v" onclick="toggleColVistos(' + v + ')">✔ Todos</button></th>';
+  }
+  html += '<th>Vistos</th><th>Nota Vistos</th>';
+  if (!bimMeta.datasTrabs) bimMeta.datasTrabs = [];
+  while (bimMeta.datasTrabs.length < t.numTrabs) bimMeta.datasTrabs.push('');
+  for (var j = 0; j < t.numTrabs; j++) {
+    html += '<th><input class="date-in" placeholder="DD/MM" maxlength="5" value="' + esc(bimMeta.datasTrabs[j] || '') + '" oninput="setDataAtividade(\'trabs\',' + j + ', this)">' +
+      'Trab ' + (j + 1) + '</th>';
+  }
+  html += '<th><input class="date-in" placeholder="DD/MM" maxlength="5" value="' + esc(bimMeta.dataAval || '') + '" oninput="setDataAtividade(\'aval\',0,this)">Avaliação</th>';
+  html += '<th>Nota do Bimestre</th><th>Ações</th></tr></thead><tbody>';
+
+  for (var i = 0; i < t.alunos.length; i++) {
+    var al = t.alunos[i];
+    if (q && al.nome.toLowerCase().indexOf(q) === -1) continue;
+    var res = calcBim(t, al, b);
+    if (state.filterLow && Math.round(res.notaFinal * 10) / 10 >= 6.0) continue;
+    var ab = al.bims[b];
+
+    html += '<tr><td>' + (i + 1) + '</td>' +
+      '<td class="name-col"><input style="border:none;background:transparent;color:var(--text);font-weight:600;width:100%" value="' + esc(al.nome) + '" onchange="renameAluno(' + i + ', this.value)"></td>';
+
+    for (var v = 0; v < bimMeta.numVistos; v++) {
+      var st = ab.vistos[v] || 0;
+      var icon = st === 1 ? '✅' : (st === 2 ? '⚠️' : '❌');
+      html += '<td><button class="visto-btn" onclick="cycleVisto(' + i + ',' + v + ')">' + icon + '</button></td>';
+    }
+    html += '<td>' + res.vistosCount + '/' + bimMeta.numVistos + '</td>' +
+      '<td><b>' + fmt(res.notaVistos) + '</b></td>';
+
+    for (var j = 0; j < t.numTrabs; j++) {
+      html += '<td><input type="text" inputmode="numeric" class="nota-in" value="' + esc(formatNotaDisplay(ab.trabs[j])) + '" oninput="formatNotaInput(this)" onchange="setNota(' + i + ',\'trabs\',' + j + ',this.value)"></td>';
+    }
+    html += '<td><input type="text" inputmode="numeric" class="nota-in" value="' + esc(formatNotaDisplay(ab.aval)) + '" oninput="formatNotaInput(this)" onchange="setNota(' + i + ',\'aval\',0,this.value)"></td>';
+
+    html += '<td><span class="badge ' + getBadgeClass(res.notaFinal) + '">' + fmt(res.notaFinal) + '</span></td>' +
+      '<td><button class="btn btn-sm" onclick="editObs(' + i + ')" title="Observação">' + (ab.obs ? '📝' : '💬') + '</button> ' +
+      '<button class="btn btn-sm" onclick="delAluno(' + i + ')" title="Excluir">🗑️</button></td></tr>';
+  }
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+function formatDataDDMM(input) {
+  var digits = String(input.value || '').replace(/\D/g, '').slice(0, 4);
+  var formatted = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+  input.value = formatted;
+  return formatted;
+}
+
+function setDataVisto(vIdx, input) {
+  var t = getTurma();
+  var bm = getBimCfg(t, state.currentBim);
+  bm.datas[vIdx] = formatDataDDMM(input);
+  saveState();
+}
+
+function setDataAtividade(tipo, idx, input) {
+  var t = getTurma();
+  var bm = getBimCfg(t, state.currentBim);
+  var data = formatDataDDMM(input);
+  if (tipo === 'aval') bm.dataAval = data;
+  else bm.datasTrabs[idx] = data;
+  saveState();
+}
+
+function cycleVisto(aIdx, vIdx) {
+  var t = getTurma();
+  var ab = t.alunos[aIdx].bims[state.currentBim];
+  ab.vistos[vIdx] = ((ab.vistos[vIdx] || 0) + 1) % 3;
+  saveState();
+  renderTable();
+}
+
+function toggleColVistos(vIdx) {
+  var t = getTurma();
+  var b = state.currentBim;
+  var anyUnchecked = false;
+  for (var i = 0; i < t.alunos.length; i++) {
+    if ((t.alunos[i].bims[b].vistos[vIdx] || 0) !== 1) {
+      anyUnchecked = true;
+      break;
+    }
+  }
+  var target = anyUnchecked ? 1 : 0;
+  for (var i = 0; i < t.alunos.length; i++) {
+    t.alunos[i].bims[b].vistos[vIdx] = target;
+  }
+  saveState();
+  renderTable();
+}
+
+function formatNotaDisplay(val) {
+  if (val === '' || val === null || typeof val === 'undefined') return '';
+  var n = Number(String(val).replace(',', '.'));
+  return isNaN(n) ? '' : n.toFixed(1).replace('.', ',');
+}
+
+function formatNotaInput(input) {
+  var digits = String(input.value || '').replace(/\D/g, '').slice(0, 3);
+  if (!digits) {
+    input.value = '';
+    return;
+  }
+  var n = (digits === '10' || digits === '100' || digits === '010') ? 10 : Number(digits) / 10;
+  if (n > 10) n = 10;
+  input.value = n.toFixed(1).replace('.', ',');
+}
+
+function setNota(aIdx, field, idx, val) {
+  var t = getTurma();
+  var ab = t.alunos[aIdx].bims[state.currentBim];
+  var digits = String(val || '').replace(/\D/g, '').slice(0, 3);
+  var nota = '';
+  if (digits) {
+    var n = (digits === '10' || digits === '100' || digits === '010') ? 10 : Number(digits) / 10;
+    nota = String(Math.min(10, n).toFixed(1));
+  }
+  if (field === 'aval') ab.aval = nota;
+  else ab[field][idx] = nota;
+  saveState();
+  renderTable();
+}
+
+function addAluno() {
+  var nome = prompt('Nome do aluno:');
+  if (!nome) return;
+  var t = getTurma();
+  var maxV = t.numVistos || 5;
+  for (var b = 0; b < 4; b++) {
+    var cfg = getBimCfg(t, b);
+    if (cfg.numVistos > maxV) maxV = cfg.numVistos;
+  }
+  t.alunos.push(createAluno(nome.trim(), maxV, t.numTrabs));
+  saveState();
+  renderTable();
+}
+
+function renameAluno(idx, val) {
+  if (!val.trim()) return;
+  getTurma().alunos[idx].nome = val.trim();
+  saveState();
+}
+
+function delAluno(idx) {
+  var t = getTurma();
+  if (!confirm('Remover ' + t.alunos[idx].nome + '?')) return;
+  t.alunos.splice(idx, 1);
+  saveState();
+  renderTable();
+}
+
+function editObs(idx) {
+  var t = getTurma();
+  var ab = t.alunos[idx].bims[state.currentBim];
+  var txt = prompt('Observação para ' + t.alunos[idx].nome + ':', ab.obs || '');
+  if (txt === null) return;
+  ab.obs = txt;
+  saveState();
+  renderTable();
+}
+
+function sortAlunos() {
+  var t = getTurma();
+  t.alunos.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+  saveState();
+  renderTable();
+}
+
+function importAlunos(replace) {
+  var lines = document.getElementById('pasteArea').value.split(/\r?\n/);
+  var t = getTurma();
+  var maxV = t.numVistos || 5;
+  for (var b = 0; b < 4; b++) {
+    var cfg = getBimCfg(t, b);
+    if (cfg.numVistos > maxV) maxV = cfg.numVistos;
+  }
+  var novos = [];
+  for (var i = 0; i < lines.length; i++) {
+    var clean = lines[i].replace(/^\d+[\.\-\)\s]+/, '').trim();
+    if (clean) novos.push(createAluno(clean, maxV, t.numTrabs));
+  }
+  if (!novos.length) return;
+  if (replace) t.alunos = novos;
+  else t.alunos = t.alunos.concat(novos);
+  document.getElementById('pasteArea').value = '';
+  closeModal('modalColar');
+  saveState();
+  renderTable();
+}
+
+function updateRules() {
+  var b = state.currentBim;
+  if (b >= 4) return;
+  var t = getTurma();
+  var bm = getBimCfg(t, b);
+  var nv = parseInt(document.getElementById('cfgNumVistos').value, 10) || 5;
+  if (nv < 1) nv = 1;
+  if (nv > 30) nv = 30;
+  var vv = parseFloat(document.getElementById('cfgValVisto').value);
+  if (isNaN(vv)) vv = 0;
+  bm.numVistos = nv;
+  bm.valVisto = vv;
+  while (bm.datas.length < nv) bm.datas.push('D' + (bm.datas.length + 1));
+  bm.datas.length = nv;
+  for (var i = 0; i < t.alunos.length; i++) {
+    while (t.alunos[i].bims[b].vistos.length < nv) t.alunos[i].bims[b].vistos.push(0);
+    t.alunos[i].bims[b].vistos.length = nv;
+  }
+  saveState();
+  renderTable();
+}
+
+function changeCols(type, delta) {
+  var t = getTurma();
+  var key = 'numTrabs';
+  var next = t[key] + delta;
+  if (next < 1 || next > 10) return;
+  t[key] = next;
+  for (var i = 0; i < t.alunos.length; i++) {
+    for (var b = 0; b < 4; b++) {
+      while (t.alunos[i].bims[b][type].length < next) t.alunos[i].bims[b][type].push('');
+      t.alunos[i].bims[b][type].length = next;
+    }
+  }
+  saveState();
+  renderTable();
+}
+
+function downloadBackup() {
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  var nomeEscola = (state.escola || ARQUIVO_ID || 'diario').toLowerCase();
+  nomeEscola = nomeEscola.normalize ? nomeEscola.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : nomeEscola;
+  nomeEscola = nomeEscola.replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'backup_' + (nomeEscola || ARQUIVO_ID) + '.json';
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function restoreBackup(ev) {
+  var file = ev.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  ev.target.value = '';
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (data && data.turmas) {
+        state = data;
+        saveState();
+        syncInputs();
+        renderTurmasBar();
+        renderTable();
+        closeModal('modalConfig');
+        alert('Backup restaurado com sucesso!');
+      }
+    } catch (err) {
+      alert('Arquivo de backup inválido.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function openModal(id) {
+  if (id === 'modalConfig') {
+    var t = getTurma();
+    var b = state.currentBim;
+    var titleEl = document.getElementById('modalConfigTitle');
+    var avisoEl = document.getElementById('cfgAnualAviso');
+    var rowEl = document.getElementById('cfgVistosRow');
+    if (b < 4) {
+      var bm = getBimCfg(t, b);
+      titleEl.textContent = '⚙ Regras (' + (b + 1) + '° Bimestre) & Backup';
+      avisoEl.style.display = 'none';
+      rowEl.style.display = 'grid';
+      document.getElementById('cfgNumVistos').value = bm.numVistos;
+      document.getElementById('cfgValVisto').value = bm.valVisto;
+    } else {
+      titleEl.textContent = '⚙ Regras & Backup';
+      avisoEl.style.display = 'block';
+      rowEl.style.display = 'none';
+    }
+  }
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function openRelatorio() {
+  var t = getTurma();
+  var sel = document.getElementById('repAlunoSelect');
+  var opts = '';
+  for (var i = 0; i < t.alunos.length; i++) {
+    opts += '<option value="' + i + '">' + (i + 1) + '. ' + esc(t.alunos[i].nome) + '</option>';
+  }
+  sel.innerHTML = opts;
+  repMode = 'turma';
+  setRepMode('turma');
+  openModal('modalRelatorio');
+}
+
+function setRepMode(mode) {
+  repMode = mode;
+  document.getElementById('btnRepTurma').classList.toggle('btn-primary', mode === 'turma');
+  document.getElementById('btnRepIndiv').classList.toggle('btn-primary', mode === 'indiv');
+  document.getElementById('repAlunoSelect').style.display = mode === 'indiv' ? 'inline-block' : 'none';
+  renderRelatorio();
+}
+
+function renderRelatorio() {
+  var t = getTurma();
+  var b = state.currentBim;
+  var periodo = b === 4 ? 'Média Anual (Meta 24,0)' : (b + 1) + 'º Bimestre';
+  var hoje = new Date().toLocaleDateString('pt-BR');
+
+  var headerHtml = '<div style="text-align:center; margin-bottom:8px;"><h3 style="margin:0;">' + esc(state.escola || 'Escola não informada') + '</h3>' +
+    '<small>Relatório de Desempenho Escolar</small></div>' +
+    '<div class="rep-header-info">' +
+    '<div><b>Disciplina:</b> ' + esc(state.disciplina || '-') + '</div>' +
+    '<div><b>Turma:</b> ' + esc(t.nome) + '</div>' +
+    '<div><b>Professor(a):</b> ' + esc(t.prof || '-') + '</div>' +
+    '<div><b>Período:</b> ' + periodo + '</div>' +
+    '<div><b>Emissão:</b> ' + hoje + '</div>' +
+    '</div>';
+
+  var sigHtml = '<div class="signatures"><div class="sig-line">Assinatura do(a) Professor(a)</div><div class="sig-line">Coordenação Pedagógica</div></div>';
+
+  if (repMode === 'indiv') {
+    var idx = parseInt(document.getElementById('repAlunoSelect').value, 10) || 0;
+    var al = t.alunos[idx];
+    if (!al) {
+      document.getElementById('printArea').innerHTML = '<p>Nenhum aluno cadastrado.</p>';
+      return;
+    }
+    var soma = 0;
+    var rows = '';
+    for (var xb = 0; xb < 4; xb++) {
+      var cfgB = getBimCfg(t, xb);
+      var r = calcBim(t, al, xb);
+      soma += r.notaFinal;
+      rows += '<tr><td>' + (xb + 1) + 'º Bimestre</td><td>' + r.vistosCount + '/' + cfgB.numVistos + '</td><td>' + fmt(r.notaVistos) + '</td><td><b>' + fmt(r.notaFinal) + '</b></td><td>' + esc(al.bims[xb].obs || '-') + '</td></tr>';
+    }
+    var med = soma / 4;
+    var sit = Math.round(med * 10) / 10 >= 6.0 ? 'Aprovado' : 'Reprovado';
+    document.getElementById('printArea').innerHTML = headerHtml +
+      '<p style="margin:6px 0;"><b>Aluno(a):</b> ' + esc(al.nome) + '</p>' +
+      '<table class="rep-table"><thead><tr><th>Bimestre</th><th>Vistos</th><th>Nota Vistos</th><th>Nota do Bimestre</th><th>Observações</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<div class="rep-stats" style="margin-top:10px;">' +
+      '<div class="rep-stat-item">Soma Anual<b>' + fmt(soma) + ' / 24,0</b></div>' +
+      '<div class="rep-stat-item">Média Anual<b>' + fmt(med) + '</b></div>' +
+      '<div class="rep-stat-item">Situação<b>' + sit + '</b></div>' +
+      '</div>' + sigHtml;
+    return;
+  }
+
+  var total = t.alunos.length;
+  var aprov = 0, reprov = 0, somaTurma = 0;
+  var abaixoList = [];
+  var tbody = '';
+  var bmCur = b < 4 ? getBimCfg(t, b) : null;
+
+  for (var i = 0; i < t.alunos.length; i++) {
+    var al = t.alunos[i];
+    if (b < 4) {
+      var res = calcBim(t, al, b);
+      var nf = res.notaFinal;
+      somaTurma += nf;
+      var ok = Math.round(nf * 10) / 10 >= 6.0;
+      if (ok) aprov++; else { reprov++; abaixoList.push(al.nome + ' (' + fmt(nf) + ')'); }
+      tbody += '<tr><td>' + (i + 1) + '</td><td style="text-align:left">' + esc(al.nome) + '</td><td>' + res.vistosCount + '/' + bmCur.numVistos + '</td><td><b>' + fmt(nf) + '</b></td><td>' + (ok ? 'Aprovado' : 'Reprovado') + '</td></tr>';
+    } else {
+      var s = 0;
+      var cols = '';
+      for (var xb = 0; xb < 4; xb++) {
+        var nb = calcBim(t, al, xb).notaFinal;
+        s += nb;
+        cols += '<td>' + fmt(nb) + '</td>';
+      }
+      var med = s / 4;
+      somaTurma += med;
+      var ok = Math.round(med * 10) / 10 >= 6.0;
+      if (ok) aprov++; else { reprov++; abaixoList.push(al.nome + ' (Média ' + fmt(med) + ')'); }
+      tbody += '<tr><td>' + (i + 1) + '</td><td style="text-align:left">' + esc(al.nome) + '</td>' + cols + '<td><b>' + fmt(s) + '</b></td><td><b>' + fmt(med) + '</b></td><td>' + (ok ? 'Aprovado' : 'Reprovado') + '</td></tr>';
+    }
+  }
+
+  var pAp = total ? Math.round((aprov / total) * 100) : 0;
+  var pRep = total ? Math.round((reprov / total) * 100) : 0;
+  var medGeral = total ? (somaTurma / total) : 0;
+
+  var statsHtml = '<div class="rep-stats">' +
+    '<div class="rep-stat-item">Total de Alunos<b>' + total + '</b></div>' +
+    '<div class="rep-stat-item">Aprovados (≥ 6,0)<b>' + aprov + ' (' + pAp + '%)</b></div>' +
+    '<div class="rep-stat-item">Reprovados (&lt; 6,0)<b>' + reprov + ' (' + pRep + '%)</b></div>' +
+    '<div class="rep-stat-item">Média da Turma<b>' + fmt(medGeral) + '</b></div>' +
+    '</div>';
+
+  var attentionHtml = abaixoList.length ? '<div style="font-size:12px; margin-bottom:8px; padding:6px 8px; border-radius:6px; background:var(--red-bg); color:var(--red-tx);"><b>Atenção (Abaixo de 6,0):</b> ' + esc(abaixoList.join(', ')) + '</div>' : '';
+
+  var thead = b < 4
+    ? '<tr><th>Nº</th><th style="text-align:left">Aluno</th><th>Vistos</th><th>Nota do Bimestre</th><th>Situação</th></tr>'
+    : '<tr><th>Nº</th><th style="text-align:left">Aluno</th><th>1ºB</th><th>2ºB</th><th>3ºB</th><th>4ºB</th><th>Soma</th><th>Média</th><th>Situação</th></tr>';
+
+  document.getElementById('printArea').innerHTML = headerHtml + statsHtml + attentionHtml +
+    '<table class="rep-table"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>' + sigHtml;
+}
+
+function copyWhatsApp() {
+  var t = getTurma();
+  var b = state.currentBim;
+  var periodo = b === 4 ? 'Média Anual (Meta 24,0)' : (b + 1) + 'º Bimestre';
+  var lines = [];
+  lines.push('*' + (state.escola || 'Diário Escolar') + '*');
+  if (state.disciplina) lines.push('Disciplina: ' + state.disciplina);
+  lines.push('Turma: ' + t.nome + ' | ' + periodo);
+  if (t.prof) lines.push('Professor(a): ' + t.prof);
+  lines.push('');
+
+  if (repMode === 'indiv') {
+    var idx = parseInt(document.getElementById('repAlunoSelect').value, 10) || 0;
+    var al = t.alunos[idx];
+    if (al) {
+      lines.push('*Boletim Individual: ' + al.nome + '*');
+      var soma = 0;
+      for (var xb = 0; xb < 4; xb++) {
+        var cfgB = getBimCfg(t, xb);
+        var r = calcBim(t, al, xb);
+        soma += r.notaFinal;
+        lines.push((xb + 1) + 'º Bim: ' + fmt(r.notaFinal) + ' (Vistos: ' + r.vistosCount + '/' + cfgB.numVistos + ')');
+      }
+      var med = soma / 4;
+      lines.push('Soma: ' + fmt(soma) + ' | Média: ' + fmt(med) + ' - ' + (Math.round(med * 10) / 10 >= 6.0 ? 'Aprovado' : 'Reprovado'));
+    }
+  } else {
+    for (var i = 0; i < t.alunos.length; i++) {
+      var al = t.alunos[i];
+      var nota = 0;
+      if (b < 4) nota = calcBim(t, al, b).notaFinal;
+      else {
+        for (var xb = 0; xb < 4; xb++) nota += calcBim(t, al, xb).notaFinal;
+        nota = nota / 4;
+      }
+      var st = Math.round(nota * 10) / 10 >= 6.0 ? '✅' : '⚠️';
+      lines.push((i + 1) + '. ' + al.nome + ': *' + fmt(nota) + '* ' + st);
+    }
+  }
+
+  var text = lines.join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() { alert('Resumo copiado para o WhatsApp!'); });
+  } else {
+    prompt('Copie o texto abaixo:', text);
+  }
+}
+
+function exportCSV() {
+  var t = getTurma();
+  var b = state.currentBim;
+  var csv = [];
+  if (b < 4) {
+    csv.push('Numero;Aluno;Vistos;Nota Vistos;Nota do Bimestre;Situacao');
+    for (var i = 0; i < t.alunos.length; i++) {
+      var r = calcBim(t, t.alunos[i], b);
+      var sit = Math.round(r.notaFinal * 10) / 10 >= 6.0 ? 'Aprovado' : 'Reprovado';
+      csv.push((i + 1) + ';"' + t.alunos[i].nome + '";' + r.vistosCount + ';' + fmt(r.notaVistos) + ';' + fmt(r.notaFinal) + ';' + sit);
+    }
+  } else {
+    csv.push('Numero;Aluno;1 Bim;2 Bim;3 Bim;4 Bim;Soma;Media Anual;Situacao');
+    for (var i = 0; i < t.alunos.length; i++) {
+      var n0 = calcBim(t, t.alunos[i], 0).notaFinal;
+      var n1 = calcBim(t, t.alunos[i], 1).notaFinal;
+      var n2 = calcBim(t, t.alunos[i], 2).notaFinal;
+      var n3 = calcBim(t, t.alunos[i], 3).notaFinal;
+      var s = n0 + n1 + n2 + n3;
+      var m = s / 4;
+      var sit = Math.round(m * 10) / 10 >= 6.0 ? 'Aprovado' : 'Reprovado';
+      csv.push((i + 1) + ';"' + t.alunos[i].nome + '";' + fmt(n0) + ';' + fmt(n1) + ';' + fmt(n2) + ';' + fmt(n3) + ';' + fmt(s) + ';' + fmt(m) + ';' + sit);
+    }
+  }
+  var blob = new Blob(['\uFEFF' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'relatorio_' + t.nome.replace(/\s+/g, '_') + '.csv';
+  a.click();
+}
+
+function syncInputs() {
+  document.getElementById('escolaInput').value = state.escola || '';
+  document.getElementById('disciplinaInput').value = state.disciplina || '';
+  document.getElementById('profInput').value = getTurma().prof || '';
+  document.body.classList.toggle('dark', !!state.dark);
+  document.getElementById('themeBtn').textContent = state.dark ? '☀️' : '🌙';
+}
+
+loadState();
+syncInputs();
+renderTurmasBar();
+setBim(state.currentBim || 0);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./service-worker.js').catch(function(err) {
+      console.warn('Não foi possível registrar o modo offline:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
